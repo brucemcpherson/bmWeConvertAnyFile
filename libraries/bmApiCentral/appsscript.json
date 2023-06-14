@@ -1,0 +1,15 @@
+{
+  "timeZone": "Europe/London",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "bmPreCache",
+        "libraryId": "1Rg1AKNiECIlaGMFOR3-o4Uh3QNCdU-1dOZXRRMQjM5goBiuR64ejMeXJ",
+        "version": "10",
+        "developmentMode": false
+      }
+    ]
+  }
+}
