@@ -138,6 +138,13 @@ const AppStore = {
       return pack
     }
 
+    // check that we have the mimetype & name, otherwise go get it
+    if (!file.mimeType || !file.name) {
+      const r = drv.get ({id: file.id, throwOnError, noisy, throwOnWarning, noCache, loggy })
+      if (r.error) return r
+      file = r.data
+    }
+
     // check that this is a type we know about
     const known = rf.isKnown(file.mimeType)
     if (!known) {
@@ -188,11 +195,11 @@ const AppStore = {
       // report closure
       const commit = (output) => {
         reportConversion({ action: c.action, input: p.file, output, noisy })
-        p.file = output
         c.files = {
           input: p.file,
           output
         }
+        p.file = output
       }
 
       // add to deletion pile
