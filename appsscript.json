@@ -1,0 +1,15 @@
+{
+  "timeZone": "Europe/London",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "bmApiCentral",
+        "libraryId": "1L4pGblikbjQLQp8nQCdmCfyCxmF3MIShzsK8yy_mJ9_2YMdanXQA75vI",
+        "version": "3",
+        "developmentMode": false
+      }
+    ]
+  }
+}
