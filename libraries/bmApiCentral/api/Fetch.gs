@@ -6,8 +6,8 @@ class Fetch {
    * @param {function} p.tokenService how to get a token
    * @param {url fetch} p.fetcher url fetch app . fetch
    */
-  constructor({ defaultParams , fetch, endpoint, tokenService, expiry = 60 * 60 * 24 - 60, allowCaching = ["GET"] }) {
-    Deps.check ()
+  constructor({ defaultParams, fetch, endpoint, tokenService, expiry = 60 * 60 * 24 - 60, allowCaching = ["GET"] }) {
+    Deps.check()
     this.fetchit = (url, options) => (fetch || Deps.fetch)(url, options)
     this.endpoint = endpoint
     this.tokenService = tokenService || Deps.tokenService
@@ -24,8 +24,10 @@ class Fetch {
    * get header including oauth token
    */
   getHeaders(headers) {
+    headers = headers || {}
+    if (!this.tokenService) return headers
     return {
-      ...(headers || {}),
+      ...headers,
       Authorization: `Bearer ${this.tokenService()}`
     }
   }
@@ -52,7 +54,7 @@ class Fetch {
     }
   }
 
-  makeMultiPart({ name, blob, boundary, mimeType, metadata = {}}) {
+  makeMultiPart({ name, blob, boundary, mimeType, metadata = {} }) {
 
     const u = Exports.Utils
     // the original content type
@@ -60,12 +62,13 @@ class Fetch {
 
     // the new mimeType
     mimeType = mimeType || contentType
+    const m = { originalName: blob.getName(), contentType, ...metadata }
     const request = {
       name,
       mimeType,
-      // for gcs
-      metadata: { originalName: blob.getName(), contentType, ...metadata }
+      ...m
     }
+
     const rn = `\r\n`
 
     const firstPart = `--${boundary}${rn}` +
@@ -116,10 +119,10 @@ class Fetch {
 
     // make a standard response
     const constructPack = ({ response, cached = false }) => {
-      
+
       // the blob may have come from cache but its been faked to llok like  real one
       const blob = response.getBlob()
-      
+
       // the FetchResponse skeleton
       const pack = {
         response,
@@ -131,7 +134,7 @@ class Fetch {
       }
 
       // if the type is JSON, then we need to parse it into the data property
-      
+
       if (blob.getContentType() === 'application/json') {
         try {
           const text = response.getContentText()
@@ -142,7 +145,7 @@ class Fetch {
           pack.error = 'failed to parse JSON mimetype'
         }
       }
-      
+
       // regular http error
       if (!u.isHttpOk(response.getResponseCode())) {
         pack.error = 'code:' + response.getResponseCode() + ':' + response.getContentText()
@@ -158,12 +161,17 @@ class Fetch {
 
     // see if its in cachecheck if caching is allowed
     const allowCaching = this.allowCaching.indexOf(options.method) !== -1
+    const attemptCaching = !noCache && allowCaching
 
-    if (!noCache && allowCaching) {
+    if (noisy) {
+      console.log(`...caching will ${attemptCaching ? '' : ' not '} be attempted (allowcaching: ${allowCaching} noCache: ${noCache})`)
+    }
+
+    if (attemptCaching) {
 
       // getting the response from cache
       const cached = this.cacher.get(key)
-      
+
       // it existed
       if (cached) {
 
@@ -177,7 +185,7 @@ class Fetch {
         const blob = u.unCacheBlob(cached.blobby)
 
         // make a response that looks like it came from Fetch
-        const cachedResult  = constructPack({
+        const cachedResult = constructPack({
           cached: true,
           response: {
             getResponseCode: () => cached.responseCode,
@@ -192,7 +200,9 @@ class Fetch {
     }
 
     // good to know
-    if (noisy) console.log('..fetching', options.method, url)
+    if (noisy) {
+      console.log('..fetching', options.method, url)
+    }
 
     // do the fetch
     const response = this.fetchit(url, options)
