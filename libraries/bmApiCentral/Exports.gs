@@ -1,11 +1,11 @@
 var Exports = {
 
-  get libExports () {
+  get libExports() {
     return bmPreCache.Exports
   },
 
 
-  get Deps () {
+  get Deps() {
     return this.guard(Deps)
   },
 
@@ -16,7 +16,7 @@ var Exports = {
    * @return {Store} a proxied instance of store with property checking enabled
    */
   newStore(...args) {
-    return this.libExports.newStore (...args)
+    return this.libExports.newStore(...args)
   },
 
   /**
@@ -25,7 +25,7 @@ var Exports = {
    * @return {Cacher} a proxied instance of cacher with property checking enabled
    */
   newCacher(...args) {
-    return this.libExports.newCacher (...args)
+    return this.libExports.newCacher(...args)
   },
 
   /**
@@ -52,7 +52,7 @@ var Exports = {
    * @return {PreCache} a proxied instance of PreCache with property checking enabled
    */
   newPreCache(...args) {
-    this.libExports.newPreCache (...args)
+    this.libExports.newPreCache(...args)
   },
 
   /**
@@ -70,6 +70,23 @@ var Exports = {
    */
   newDocumentAI(...args) {
     return this.guard(new this.DocumentAI(...args))
+  },
+
+  /**
+   * Fact class
+   * @implements {Fact} 
+   */
+  get Fact() {
+    return Fact
+  },
+
+  /**
+   * Fact instance with validation
+   * @param {...*} args
+   * @return {Fact} a proxied instance of Fact with property checking enabled
+   */
+  newFact(...args) {
+    return this.guard(new this.Fact(...args))
   },
 
   /**
@@ -112,6 +129,23 @@ var Exports = {
    */
   get Drv() {
     return Drv
+  },
+
+  /**
+   * Speech class
+   * @implements {Speech} 
+   */
+  get Speech() {
+    return Speech
+  },
+
+  /**
+   * speech instance with validation
+   * @param {...*} args
+   * @return {Speech} a proxied instance of Drv with property checking enabled
+   */
+  newSpeech(...args) {
+    return this.guard(new this.Speech(...args))
   },
 
   /**
@@ -174,17 +208,23 @@ var Exports = {
   newUnit(...args) {
     return this.guard(new this.Unit(...args))
   },
-  
-  newPreFiddler (...args) {
-    return this.guard (bmPreFiddler.PreFiddler().getFiddler(...args))
-  },
-  
-  // used to trap access to unknown properties
-  guard (target) {
-    return new Proxy ( target , this.validateProperties)
+
+  newPreFiddler(...args) {
+    return this.guard(bmPreFiddler.PreFiddler().getFiddler(...args))
   },
 
-  
+  /**
+   * used to consolidate and page
+   */
+  pager(...args) {
+    return this.guard(pager(...args))
+  },
+
+  // used to trap access to unknown properties
+  guard(target) {
+    return new Proxy(target, this.validateProperties)
+  },
+
 
   /**
    * for validating attempts to access non existent properties
