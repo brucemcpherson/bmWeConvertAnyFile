@@ -7,14 +7,16 @@ var Deps = (()=> {
     fetch: null
   }
 
-  const init =  ({ tokenService, fetch }) => {
+  const init =  ({ tokenService = null, fetch }) => {
     funcs.tokenService = tokenService
     funcs.fetch = fetch
   }
 
   const check = () => {
     Reflect.ownKeys (funcs).forEach (f=>{
-      if(!Exports.Utils.isFunction(funcs[f])) throw (`did you run Deps.init ? ${f} is not a function`)
+      if (funcs[f]){
+        if(!Exports.Utils.isFunction(funcs[f])) throw (`did you run Deps.init ? ${f} is not a function`)
+      }
     })
     return true
   }
